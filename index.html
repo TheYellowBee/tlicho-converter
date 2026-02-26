@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tłı̨chǫ Yatı — Roman to Syllabics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Canadian+Aboriginal&family=Noto+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Noto Sans', system-ui, sans-serif;
+      background: #eef4f5;
+      color: #1a2e32;
+      min-height: 100vh;
+      padding: 28px 16px 48px;
+    }
+
+    .container {
+      max-width: 660px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    header h1 {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: #1a7a8c;
+      margin-bottom: 4px;
+      letter-spacing: -0.01em;
+    }
+    header p {
+      color: #5a8088;
+      font-size: 0.93rem;
+    }
+
+    /* ── Cards ── */
+    .card {
+      background: #fff;
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 5px rgba(0,60,70,0.08);
+    }
+
+    /* ── Input ── */
+    textarea#input {
+      width: 100%;
+      min-height: 88px;
+      border: 2px solid #c5dfe3;
+      border-radius: 9px;
+      padding: 12px 14px;
+      font-size: 1.1rem;
+      font-family: 'Noto Sans', system-ui, sans-serif;
+      color: #1a2e32;
+      resize: vertical;
+      outline: none;
+      transition: border-color 0.18s;
+      line-height: 1.5;
+    }
+    textarea#input:focus { border-color: #1a7a8c; }
+    textarea#input::placeholder { color: #a8c4c8; }
+
+    /* ── Char panel ── */
+    .char-panel { margin-top: 14px; }
+    .char-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #5a8088;
+      margin-bottom: 9px;
+      display: block;
+    }
+    .char-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 7px;
+    }
+    .char-row:last-child { margin-bottom: 0; }
+    .char-row-label {
+      font-size: 0.7rem;
+      color: #8aabb0;
+      align-self: center;
+      min-width: 60px;
+    }
+    .char-btn {
+      background: #f0f8f9;
+      border: 1.5px solid #c5dfe3;
+      border-radius: 7px;
+      padding: 4px 11px;
+      font-size: 1rem;
+      font-family: 'Noto Sans', system-ui, sans-serif;
+      color: #1a2e32;
+      cursor: pointer;
+      transition: background 0.13s, border-color 0.13s;
+      line-height: 1.4;
+      user-select: none;
+    }
+    .char-btn:hover { background: #d4eef2; border-color: #1a7a8c; }
+    .char-btn:active { background: #1a7a8c; color: #fff; border-color: #1a7a8c; }
+
+    /* ── Examples ── */
+    .examples {
+      margin-top: 13px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      align-items: center;
+    }
+    .examples-label {
+      font-size: 0.75rem;
+      color: #8aabb0;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .example-btn {
+      font-size: 0.82rem;
+      background: #f0f8f9;
+      border: 1.5px solid #c5dfe3;
+      border-radius: 20px;
+      padding: 3px 11px;
+      cursor: pointer;
+      color: #1a7a8c;
+      font-weight: 600;
+      font-family: 'Noto Sans', system-ui, sans-serif;
+      transition: background 0.13s;
+    }
+    .example-btn:hover { background: #d4eef2; }
+
+    /* ── Output cards ── */
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .output-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #5a8088;
+    }
+    .copy-btn {
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: #f0f8f9;
+      border: 1.5px solid #c5dfe3;
+      border-radius: 20px;
+      padding: 3px 13px;
+      cursor: pointer;
+      color: #1a7a8c;
+      transition: background 0.13s, color 0.13s;
+    }
+    .copy-btn:hover { background: #d4eef2; }
+    .copy-btn.copied { background: #1a7a8c; color: #fff; border-color: #1a7a8c; }
+
+    .syllabics-text {
+      font-family: 'Noto Sans Canadian Aboriginal', 'Noto Sans', system-ui, sans-serif;
+      font-size: 2rem;
+      line-height: 1.6;
+      color: #1a2e32;
+      min-height: 56px;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+    .ipa-text {
+      font-family: 'Noto Sans', system-ui, sans-serif;
+      font-size: 1.15rem;
+      line-height: 1.7;
+      color: #3a6068;
+      min-height: 36px;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+    .placeholder {
+      color: #b0cdd1;
+      font-style: italic;
+      font-size: 0.95rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      color: #8aabb0;
+      font-size: 0.78rem;
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>Tłı̨chǫ Yatı Converter</h1>
+    <p>Type in Tłı̨chǫ Roman orthography — see Practical Syllabics &amp; IPA</p>
+  </header>
+
+  <div class="card">
+    <textarea id="input" placeholder="Type Tłı̨chǫ here…" oninput="convert()" spellcheck="false" autocorrect="off" autocapitalize="off"></textarea>
+
+    <div class="char-panel">
+      <span class="char-label">Special characters</span>
+
+      <div class="char-row">
+        <span class="char-row-label">Letters</span>
+        <button class="char-btn" onclick="ins('ɂ')" title="glottal stop">ɂ</button>
+        <button class="char-btn" onclick="ins('ł')" title="barred L">ł</button>
+        <button class="char-btn" onclick="ins('ı')" title="dotless I">ı</button>
+      </div>
+
+      <div class="char-row">
+        <span class="char-row-label">Nasal</span>
+        <button class="char-btn" onclick="ins('ą')">ą</button>
+        <button class="char-btn" onclick="ins('ę')">ę</button>
+        <button class="char-btn" onclick="ins('\u0131\u0328')">ı̨</button>
+        <button class="char-btn" onclick="ins('ǫ')">ǫ</button>
+      </div>
+
+      <div class="char-row">
+        <span class="char-row-label">Low tone</span>
+        <button class="char-btn" onclick="ins('à')">à</button>
+        <button class="char-btn" onclick="ins('è')">è</button>
+        <button class="char-btn" onclick="ins('\u0131\u0300')">ı̀</button>
+        <button class="char-btn" onclick="ins('ò')">ò</button>
+      </div>
+
+      <div class="char-row">
+        <span class="char-row-label">Both</span>
+        <button class="char-btn" onclick="ins('\u0105\u0300')">ą̀</button>
+        <button class="char-btn" onclick="ins('\u0119\u0300')">ę̀</button>
+        <button class="char-btn" onclick="ins('\u0131\u0328\u0300')">ı̨̀</button>
+        <button class="char-btn" onclick="ins('\u01EB\u0300')">ǫ̀</button>
+      </div>
+    </div>
+
+    <div class="examples">
+      <span class="examples-label">Try:</span>
+      <button class="example-btn" onclick="setExample('tłı̨chǫ')">tłı̨chǫ</button>
+      <button class="example-btn" onclick="setExample('whaèhdǫǫ̀')">whaèhdǫǫ̀</button>
+      <button class="example-btn" onclick="setExample('ɂekw'è')">ɂekw'è</button>
+      <button class="example-btn" onclick="setExample('sı̨ godı')">sı̨ godı</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="output-header">
+      <span class="output-title">Syllabics</span>
+      <button class="copy-btn" id="copy-syll" onclick="copyOut('syll-out', 'copy-syll')">Copy</button>
+    </div>
+    <div class="syllabics-text" id="syll-out">
+      <span class="placeholder">Syllabics will appear here</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="output-header">
+      <span class="output-title">IPA</span>
+      <button class="copy-btn" id="copy-ipa" onclick="copyOut('ipa-out', 'copy-ipa')">Copy</button>
+    </div>
+    <div class="ipa-text" id="ipa-out">
+      <span class="placeholder">IPA will appear here</span>
+    </div>
+  </div>
+
+  <footer>
+    Tłı̨chǫ Practical Syllabics · Official orthography<br>
+    Nasal vowels and tone marks affect the syllabics output — use the buttons above for accuracy.
+  </footer>
+
+</div>
+<script>
+// ================================================================
+// Syllabics data (from practical_syllabics.csv)
+// ================================================================
+
+const SYLL_VOWEL = { a:'ᐊ', e:'ᐁ', i:'ᐃ', o:'ᐅ' };
+
+const SYLL_CV = {
+  'ɂ':  { a:'ᐥᐊ', e:'ᐥᐁ', i:'ᐥᐃ', o:'ᐥᐅ' },
+  'h':  { a:'ᐊᑊ', e:'ᐁᑊ', i:'ᐃᑊ', o:'ᐅᑊ' },
+  'w':  { a:'ᐤᐊ', e:'ᐤᐁ', i:'ᐤᐃ', o:'ᐤᐅ' },
+  'b':  { a:'ᐸ',  e:'ᐯ',  i:'ᐱ',  o:'ᐳ'  },
+  'd':  { a:'ᑕ',  e:'ᑌ',  i:'ᑎ',  o:'ᑐ'  },
+  'r':  { a:'ᖍ',  e:'ᖊ',  i:'ᖋ',  o:'ᖌ'  },
+  't':  { a:'ᕦ',  e:'ᕞ',  i:'ᕠ',  o:'ᕤ'  },
+  "t'": { a:'ᑕᑊ', e:'ᑌᑊ', i:'ᑎᑊ', o:'ᑐᑊ' },
+  'g':  { a:'ᗃ',  e:'ᗀ',  i:'ᗁ',  o:'ᗂ'  },
+  'k':  { a:'ᑲ',  e:'ᑫ',  i:'ᑭ',  o:'ᑯ'  },
+  "k'": { a:'ᑲᑊ', e:'ᑫᑊ', i:'ᑭᑊ', o:'ᑯᑊ' },
+  'gh': { a:'ᒼᗃ', e:'ᒼᗀ', i:'ᒼᗁ', o:'ᒼᗂ' },
+  'x':  { a:'ᒼᐊ', e:'ᒼᐁ', i:'ᒼᐃ', o:'ᒼᐅ' },
+  'l':  { a:'ᕍ',  e:'ᕃ',  i:'ᕄ',  o:'ᕊ'  },
+  'ł':  { a:'ᒼᕍ', e:'ᒼᕃ', i:'ᒼᕄ', o:'ᒼᕊ' },
+  'dl': { a:'ᐨᖉ', e:'ᐨᖆ', i:'ᐨᖇ', o:'ᐨᖈ' },
+  'tł': { a:'ᖉ',  e:'ᖆ',  i:'ᖇ',  o:'ᖈ'  },
+  "tł'":{ a:'ᖉᑊ', e:'ᖆᑊ', i:'ᖇᑊ', o:'ᖈᑊ' },
+  'm':  { a:'ᒪ',  e:'ᒣ',  i:'ᒥ',  o:'ᒧ'  },
+  'n':  { a:'ᓇ',  e:'ᓀ',  i:'ᓂ',  o:'ᓄ'  },
+  'z':  { a:'ᐣᓴ', e:'ᐣᓭ', i:'ᐣᓯ', o:'ᐣᓱ' },
+  's':  { a:'ᓴ',  e:'ᓭ',  i:'ᓯ',  o:'ᓱ'  },
+  'dz': { a:'ᐨᘔ', e:'ᐨᘛ', i:'ᐨᘚ', o:'ᐨᘕ' },
+  'ts': { a:'ᘔ',  e:'ᘛ',  i:'ᘚ',  o:'ᘕ'  },
+  "ts'":{ a:'ᘔᑊ', e:'ᘛᑊ', i:'ᘚᑊ', o:'ᘕᑊ' },
+  'y':  { a:'ᔭ',  e:'ᔦ',  i:'ᔨ',  o:'ᔪ'  },
+  'zh': { a:'ᐣᖚ', e:'ᐣᖗ', i:'ᐣᖘ', o:'ᐣᖙ' },
+  'sh': { a:'ᖚ',  e:'ᖗ',  i:'ᖘ',  o:'ᖙ'  },
+  'j':  { a:'ᐨᗴ', e:'ᐨᗯ', i:'ᐨᗰ', o:'ᐨᗱ' },
+  'ch': { a:'ᗴ',  e:'ᗯ',  i:'ᗰ',  o:'ᗱ'  },
+  "ch'":{ a:'ᗴᑊ', e:'ᗯᑊ', i:'ᗰᑊ', o:'ᗱᑊ' },
+  'wh': { a:'ᒐ',  e:'ᒉ',  i:'ᒋ',  o:'ᒍ'  },
+  'gw': { a:'ᐨᕮ', e:'ᐨᕫ', i:'ᐨᕬ', o:'ᐨᕭ' },
+  'kw': { a:'ᕮ',  e:'ᕫ',  i:'ᕬ',  o:'ᕭ'  },
+  "kw'":{ a:'ᕮᑊ', e:'ᕫᑊ', i:'ᕬᑊ', o:'ᕭᑊ' },
+};
+
+// Finals (ᐊ carrier stripped from CSV)
+const SYLL_FINAL = {
+  'ɂ':'ᐥ', 'h':'ᐧ',  'w':'ᐤ',  'b':'ᑉ',  'd':'ᐨ',
+  'r':'ᙆ',  't':'ᒡ',  'g':'ᐦ',  'k':'ᐠ',  'gh':'ᑊ',
+  'x':'ᕁ',  'l':'ᔆ',  'ł':'ᐟ',  'm':'ᒼ',  'n':'ᐣ',
+  'z':'ᓑ',  's':'ᐢ',  'y':'ᐩ',  'sh':'ᒃ', 'wh':'ᒢ',
+};
+
+const SYLL_NASAL   = 'ᐠ';   // U+1420
+const SYLL_LONG_DOT = '\u0307'; // combining dot above
+
+// ================================================================
+// IPA data
+// ================================================================
+
+const IPA_MAP = {
+  'ɂ':'ʔ',   'b':'p',    'ch':'tʃʰ', "ch'":'tʃʼ', 'd':'t',
+  'dl':'tɬ',  'dz':'ts',  'g':'k',    'gh':'ɣ',    'gw':'kʷ',
+  'h':'h',    'j':'tʃ',   'k':'kʰ',   "k'":'kʼ',   'kw':'kʷʰ',
+  "kw'":'kʷʼ','l':'ɮ',    'ł':'ɬ',    'm':'m',     'mb':'ᵐb',
+  'n':'n',    'nd':'ⁿd',  'r':'ɾ',    's':'s',     'sh':'ʃ',
+  't':'tʰ',   "t'":'tʼ',  'tł':'tɬʰ', "tł'":'tɬʼ',
+  'ts':'tsʰ', "ts'":'tsʼ','w':'w',    'wh':'ʍ',
+  'x':'x',    'y':'j',    'z':'z',    'zh':'ʒ',
+  'a':'a',    'e':'ɛ',    'ı':'i',    'o':'o',
+};
+
+// ================================================================
+// Alphabet & vowel helpers
+// ================================================================
+
+const TLICHO_ALPHABET = [
+  'ɂ','a','b','ch',"ch'",'d','dl','dz','e','g','gh','gw',
+  'h','ı','j','k',"k'",'kw',"kw'",'l','ł','m','mb','n',
+  'nd','o','r','s','sh','t',"t'",'tł',"tł'",'ts',"ts'",
+  'w','wh','x','y','z','zh',
+];
+const LETTERS_BY_LEN = [...TLICHO_ALPHABET].sort((a,b) => b.length - a.length);
+const TLICHO_VOWELS  = new Set(['a','e','ı','o']);
+const VOWEL_TO_COL   = { a:'a', e:'e', 'ı':'i', o:'o' };
+const PRENASAL       = { 'nd':['n','d'], 'mb':['m','b'] };
+
+// Map all accented/diacritical vowel variants → base Tłı̨chǫ vowel
+const VOWEL_BASE = {};
+for (const c of 'àáąÀÁĄ') VOWEL_BASE[c] = 'a';
+for (const c of 'èéęÈÉĘ') VOWEL_BASE[c] = 'e';
+for (const c of 'òóǫÒÓǪ') VOWEL_BASE[c] = 'o';
+for (const c of ['ı','i','ì','í','į','I','Ì','Í','Į']) VOWEL_BASE[c] = 'ı';
+for (const c of 'aeioAEIO') VOWEL_BASE[c] = c.toLowerCase() === 'i' ? 'ı' : c.toLowerCase();
+
+function isMark(c)    { return /\p{M}/u.test(c); }
+function isVowel(c)   {
+  const cl = c.toLowerCase();
+  if (cl in VOWEL_BASE) return true;
+  if (cl === 'ı' || cl === 'i') return true;
+  const d = cl.normalize('NFD');
+  return d.length > 0 && 'aeiou'.includes(d[0]);
+}
+function normChar(c)  {
+  const cl = c.toLowerCase();
+  if (cl in VOWEL_BASE) return VOWEL_BASE[cl];
+  if (cl === 'ı' || cl === 'i') return 'ı';
+  if (cl === 'ł') return 'ł';
+  if (cl === 'ɂ') return 'ɂ';
+  return cl;
+}
+
+// ================================================================
+// Parser — same logic as Python tlicho_converter.py
+// ================================================================
+
+function parseWord(word) {
+  // Spread by code points so combining marks are separate array elements
+  const chars = [...word.toLowerCase()
+    .replace(/^[-\s]+/, '')
+    .replace(/[\u2019\u2018]/g, "'")];
+  const result = [];
+  let i = 0;
+
+  while (i < chars.length) {
+    const c = chars[i];
+
+    if (c === ' ' || c === '-') {
+      result.push({ letter: c, is_vowel: false, separator: true });
+      i++; continue;
+    }
+    if (isMark(c)) { i++; continue; }
+
+    if (isVowel(c)) {
+      const base = normChar(c);
+      let nasal = false, low_tone = false;
+      const decomp = c.normalize('NFD');
+      if (decomp.includes('\u0328')) nasal = true;
+      if (decomp.includes('\u0300')) low_tone = true;
+      let j = i + 1;
+      while (j < chars.length && isMark(chars[j])) {
+        if (chars[j] === '\u0328') nasal = true;
+        else if (chars[j] === '\u0300') low_tone = true;
+        j++;
+      }
+      result.push({ letter: base, is_vowel: true, nasal, low_tone });
+      i = j; continue;
+    }
+
+    // Try consonant match, longest first
+    let matched = false;
+    for (const letter of LETTERS_BY_LEN) {
+      if (TLICHO_VOWELS.has(letter)) continue;
+      const llen = letter.length;
+      let chunk = '', ci = i, used = 0;
+      while (used < llen && ci < chars.length) {
+        if (isMark(chars[ci])) { ci++; continue; }
+        chunk += normChar(chars[ci]);
+        used++; ci++;
+      }
+      if (chunk === letter) {
+        result.push({ letter, is_vowel: false });
+        i = ci; matched = true; break;
+      }
+    }
+    if (!matched) { result.push({ letter: c, is_vowel: false, unknown: true }); i++; }
+  }
+  return result;
+}
+
+// ================================================================
+// Long-vowel dot helper
+// ================================================================
+
+function addLongDot(s) {
+  const cp = [...s]; // spread to code points
+  if (cp.length === 1) return s + SYLL_LONG_DOT;
+  const prefixes = new Set(['ᐨ','ᒼ','ᐣ','ᐥ','ᐤ']);
+  if (prefixes.has(cp[0])) {
+    return cp[0] + cp[1] + SYLL_LONG_DOT + cp.slice(2).join('');
+  }
+  if (s.endsWith('ᑊ') && cp.length === 2) {
+    return cp[0] + SYLL_LONG_DOT + 'ᑊ';
+  }
+  return s + SYLL_LONG_DOT;
+}
+
+// ================================================================
+// toSyllabics
+// ================================================================
+
+function toSyllabics(word) {
+  if (!word.trim()) return '';
+  const parsed = parseWord(word);
+  const parts = [];
+  let i = 0;
+
+  while (i < parsed.length) {
+    const tok = parsed[i];
+
+    if (tok.separator || tok.unknown) { parts.push(tok.letter); i++; continue; }
+
+    let letter = tok.letter;
+
+    if (tok.is_vowel) {
+      let isLong = false, nasal = tok.nasal;
+      if (i+1 < parsed.length && parsed[i+1].is_vowel && parsed[i+1].letter === letter) {
+        isLong = true; nasal = nasal || parsed[i+1].nasal; i++;
+      }
+      const col = VOWEL_TO_COL[letter] || letter;
+      let sc = SYLL_VOWEL[col] || letter;
+      if (isLong) sc = addLongDot(sc);
+      parts.push(sc);
+      if (nasal) parts.push(SYLL_NASAL);
+
+    } else {
+      // Prenasalised: nd → n-final + d, mb → m-final + b
+      if (letter in PRENASAL) {
+        const [np, sp] = PRENASAL[letter];
+        const nf = SYLL_FINAL[np];
+        if (nf) parts.push(nf);
+        letter = sp;
+      }
+
+      if (i+1 < parsed.length && parsed[i+1].is_vowel) {
+        const vt = parsed[i+1];
+        const col = VOWEL_TO_COL[vt.letter] || vt.letter;
+        let nasal = vt.nasal, isLong = false;
+        if (i+2 < parsed.length && parsed[i+2].is_vowel && parsed[i+2].letter === vt.letter) {
+          isLong = true; nasal = nasal || parsed[i+2].nasal; i++;
+        }
+        const cvMap = SYLL_CV[letter] || {};
+        let sc = cvMap[col] || `(${letter}${col})`;
+        if (isLong) sc = addLongDot(sc);
+        parts.push(sc);
+        if (nasal) parts.push(SYLL_NASAL);
+        i++; // skip vowel
+
+      } else {
+        const f = SYLL_FINAL[letter];
+        parts.push(f != null ? f : `(${letter})`);
+      }
+    }
+    i++;
+  }
+  return parts.join('');
+}
+
+// ================================================================
+// toIPA
+// ================================================================
+
+function toIPA(word) {
+  if (!word.trim()) return '';
+  const parsed = parseWord(word);
+  const parts = [];
+  let i = 0;
+
+  while (i < parsed.length) {
+    const tok = parsed[i];
+    if (tok.separator || tok.unknown) { parts.push(tok.letter); i++; continue; }
+    const letter = tok.letter;
+
+    if (tok.is_vowel) {
+      const base = IPA_MAP[letter] || letter;
+      let isLong = false, nasal = tok.nasal, low_tone = tok.low_tone;
+      if (i+1 < parsed.length && parsed[i+1].is_vowel && parsed[i+1].letter === letter) {
+        isLong = true;
+        nasal    = nasal    || parsed[i+1].nasal;
+        low_tone = low_tone || parsed[i+1].low_tone;
+        i++;
+      }
+      let v = base;
+      if (nasal)    v += '\u0303'; // combining tilde
+      if (low_tone) v += '\u0300'; // combining grave
+      if (isLong)   v += 'ː';
+      parts.push(v);
+    } else {
+      parts.push(IPA_MAP[letter] || letter);
+    }
+    i++;
+  }
+  return '/' + parts.join('\u200a') + '/';
+}
+
+// ================================================================
+// UI
+// ================================================================
+
+function convert() {
+  const raw = document.getElementById('input').value;
+  const syllEl = document.getElementById('syll-out');
+  const ipaEl  = document.getElementById('ipa-out');
+
+  if (!raw.trim()) {
+    syllEl.innerHTML = '<span class="placeholder">Syllabics will appear here</span>';
+    ipaEl.innerHTML  = '<span class="placeholder">IPA will appear here</span>';
+    return;
+  }
+
+  const lines = raw.split('\n');
+  syllEl.textContent = lines.map(l => toSyllabics(l)).join('\n');
+  ipaEl.textContent  = lines.map(l => toIPA(l)).join('\n');
+}
+
+function ins(char) {
+  const ta = document.getElementById('input');
+  const s = ta.selectionStart, e = ta.selectionEnd;
+  ta.value = ta.value.slice(0, s) + char + ta.value.slice(e);
+  ta.selectionStart = ta.selectionEnd = s + [...char].length;
+  ta.focus();
+  convert();
+}
+
+function setExample(text) {
+  document.getElementById('input').value = text;
+  convert();
+}
+
+function copyOut(id, btnId) {
+  const text = document.getElementById(id).textContent;
+  if (!text || text.includes('will appear here')) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById(btnId);
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+</script>
+</body>
+</html>
