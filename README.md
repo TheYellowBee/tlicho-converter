@@ -49,4 +49,4 @@ Tłı̨chǫ (also known as Dogrib) is a Dene language spoken in the Northwest Te
 
 ---
 
-*Built with care for the Tłı̨chǫ community.*
+*Built with care for the Tłı̨chǫ community · Made with [Claude](https://claude.ai) (Anthropic)*
