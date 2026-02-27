@@ -31,15 +31,17 @@ A simple, single-page web tool for converting Tłı̨chǫ Roman orthography into
 | whaèhdǫǫ̀ | ᒐᐁᐧᑐ̇ᐠ | /ʍ a ɛ̀ h t õ̀ː/ |
 | sı̨ godı | ᓯᐠ ᗂᑎ | /s ĩ k o t i/ |
 
-## About Practical Syllabics
+## About the Syllabics
 
-Tłı̨chǫ has traditionally been written in a syllabics system descended from the one developed by James Evans in the 1800s. The **Practical Syllabics** used in this converter is a revised, modernised system documented by [languagegeek.com](https://www.languagegeek.com) — designed to be more consistent and easier to encode digitally. It differs from the traditional syllabarium in some characters. Both systems are part of the Unified Canadian Aboriginal Syllabics (UCAS) Unicode block.
+Tłı̨chǫ is written today primarily in Roman orthography. A traditional syllabics system exists, based on the French/Catholic missionary tradition, but it doesn't distinguish all sounds of the language — for example, /j/ and /ch'/ share the same symbol, and fluent speakers infer the correct one from context.
+
+The **Practical Syllabics** used in this converter is a proposed system developed by [languagegeek.com](https://www.languagegeek.com/dene/transdene/trans_dene_syllabarium.html) to more accurately represent Tłı̨chǫ sounds within the Unified Canadian Aboriginal Syllabics (UCAS) Unicode standard. It has not been officially adopted by the community — think of it as a demonstration of what syllabics *could* look like for Tłı̨chǫ.
 
 ## Technical notes
 
 - Pure HTML + JavaScript, no frameworks, no server
 - All syllabics data is embedded — works offline
-- Based on **Tłı̨chǫ Practical Syllabics** (official orthography)
+- Based on the proposed **Tłı̨chǫ Practical Syllabics** system by languagegeek.com
 - Handles all 41 letters of the Tłı̨chǫ alphabet including digraphs (ch, tł, kw', etc.)
 - Long vowels, nasal vowels, low tone, and prenasalised stops (nd, mb) all supported
 
