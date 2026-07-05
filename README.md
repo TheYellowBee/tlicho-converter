@@ -11,8 +11,10 @@ A simple, single-page web tool for converting Tłı̨chǫ Roman orthography into
 - Type any Tłı̨chǫ word or phrase in Roman orthography
 - Instantly see the **Practical Syllabics** equivalent
 - Also shows the **IPA** (International Phonetic Alphabet) pronunciation
+- **Hover any output symbol** to highlight the Roman letters it comes from
 - Built-in special character panel — no Tłı̨chǫ keyboard needed
-- Works on phone and desktop, fully offline after first load
+- **Dark mode** — follows your device's light/dark setting automatically
+- Side-by-side layout on desktop, stacked on phone; fully offline after first load
 
 ## How to use
 
@@ -21,7 +23,7 @@ A simple, single-page web tool for converting Tłı̨chǫ Roman orthography into
 3. Use the character buttons to add diacritics (ı̨, ǫ, ł, ɂ, etc.)
 4. Copy the syllabics or IPA output with the Copy button
 
-**Tip:** Nasal vowels (ǫ, ı̨) and tone marks (à, ǫ̀) affect the syllabics output — the more accurate your Roman input, the more accurate the syllabics.
+**Tip:** Nasal vowels (ǫ, ı̨) affect the syllabics output, and tone marks (à, ǫ̀) show up in the IPA — the more accurate your Roman input, the more accurate the output.
 
 ## Examples
 
